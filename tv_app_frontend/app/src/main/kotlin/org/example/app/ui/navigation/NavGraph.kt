@@ -3,6 +3,7 @@ package org.example.app.ui.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import org.example.app.ui.screens.DetailsScreen
@@ -18,7 +19,7 @@ object Routes {
 
 // PUBLIC_INTERFACE
 @Composable
-fun AppNavGraph(navController: NavController) {
+fun AppNavGraph(navController: NavHostController) {
     val repo = SampleRepository()
     NavHost(navController = navController, startDestination = Routes.Home) {
         addHome(navController, repo)
@@ -26,7 +27,8 @@ fun AppNavGraph(navController: NavController) {
     }
 }
 
-private fun NavGraphBuilder.addHome(navController: NavController, repo: SampleRepository) {
+// PUBLIC_INTERFACE
+fun NavGraphBuilder.addHome(navController: NavController, repo: SampleRepository) {
     composable(Routes.Home) {
         HomeScreen(
             tabs = repo.tabs(),
@@ -37,7 +39,8 @@ private fun NavGraphBuilder.addHome(navController: NavController, repo: SampleRe
     }
 }
 
-private fun NavGraphBuilder.addDetails(navController: NavController, repo: SampleRepository) {
+// PUBLIC_INTERFACE
+fun NavGraphBuilder.addDetails(navController: NavController, repo: SampleRepository) {
     composable(Routes.Details) { backStackEntry ->
         val id = backStackEntry.arguments?.getString("id") ?: ""
         val item = repo.findById(id)

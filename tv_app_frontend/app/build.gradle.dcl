@@ -18,6 +18,9 @@ androidApplication {
         // Navigation for Compose
         implementation("androidx.navigation:navigation-compose:2.8.3")
 
+        // Image loading with Coil for Compose
+        implementation("io.coil-kt:coil-compose:2.6.0")
+
         // Tooling (compileOnly/runtimeOnly not allowed in DCL deps; keep simple)
         implementation("androidx.compose.ui:ui-tooling:1.7.3")
 

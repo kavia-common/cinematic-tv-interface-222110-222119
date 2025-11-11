@@ -5,7 +5,8 @@ data class MediaItem(
     val id: String,
     val title: String,
     val description: String,
-    val genre: String
+    val genre: String,
+    val imageUrl: String
 )
 
 // PUBLIC_INTERFACE

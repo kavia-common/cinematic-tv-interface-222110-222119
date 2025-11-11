@@ -1,12 +1,16 @@
 package org.example.app.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.example.app.data.MediaItem
@@ -29,20 +33,29 @@ fun GenreRow(
         modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
     )
 
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 24.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { visible = true }
+
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(animationSpec = tween(durationMillis = 450))
     ) {
-        items(items) { item ->
-            PosterCard(
-                item = item,
-                modifier = Modifier
-                    .padding(end = 16.dp)
-                    .size(width = 120.dp, height = 180.dp),
-                onClick = onCardClick
-            )
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 24.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .focusGroup()
+        ) {
+            items(items) { item ->
+                PosterCard(
+                    item = item,
+                    modifier = Modifier
+                        .padding(end = 16.dp)
+                        .size(width = 140.dp, height = 180.dp),
+                    onClick = onCardClick
+                )
+            }
         }
     }
     Spacer(modifier = Modifier.height(12.dp))

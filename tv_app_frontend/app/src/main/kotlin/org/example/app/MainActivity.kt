@@ -13,6 +13,9 @@ import androidx.core.view.WindowCompat
 import org.example.app.ui.theme.AppTheme
 import org.example.app.ui.navigation.AppNavGraph
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.graphics.Brush
+import org.example.app.ui.theme.GradientEnd
+import org.example.app.ui.theme.GradientStart
 
 // PUBLIC_INTERFACE
 class MainActivity : ComponentActivity() {
@@ -34,10 +37,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun RootContent() {
     val navController = rememberNavController()
-    Box(
+    // Use a non-inline composable wrapper to avoid potential IR inline crash on Box$default
+    androidx.compose.foundation.layout.Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(
+                brush = Brush.verticalGradient(listOf(GradientStart, GradientEnd))
+            )
     ) {
         AppNavGraph(navController = navController)
     }
