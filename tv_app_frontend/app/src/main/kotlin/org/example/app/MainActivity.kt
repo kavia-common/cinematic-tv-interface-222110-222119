@@ -37,14 +37,27 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun RootContent() {
     val navController = rememberNavController()
-    // Use a non-inline composable wrapper to avoid potential IR inline crash on Box$default
-    androidx.compose.foundation.layout.Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(listOf(GradientStart, GradientEnd))
-            )
-    ) {
+
+    // Use a simple non-inline background wrapper to avoid IR inliner issues
+    BackgroundContainer {
         AppNavGraph(navController = navController)
+    }
+}
+
+// PUBLIC_INTERFACE
+@Composable
+private fun BackgroundContainer(content: @Composable () -> Unit) {
+    // Build the gradient and apply as Modifier without using inline Box/Column helpers
+    val bgBrush = Brush.verticalGradient(listOf(GradientStart, GradientEnd))
+    // Compose allows invoking content() directly at the root
+    androidx.compose.runtime.CompositionLocalProvider {
+        // Apply background to a zero-layout wrapper using drawBehind via background modifier on an empty layout
+        // Use Spacer to realize the modifier chain without relying on Box/Column inline API
+        androidx.compose.foundation.layout.Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(bgBrush)
+        )
+        content()
     }
 }
