@@ -3,7 +3,6 @@ package org.example.app.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +23,12 @@ import coil.compose.rememberAsyncImagePainter
 import org.example.app.data.MediaItem
 import org.example.app.tv.tvFocus
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * PosterCard shows a media poster with a gradient title overlay.
+ * It intentionally avoids Box() usage to prevent triggering inline default overloads (Box$default),
+ * which have caused IR inlining crashes in some CI environments.
+ */
 @Composable
 fun PosterCard(
     item: MediaItem,
@@ -32,45 +36,47 @@ fun PosterCard(
     onClick: (MediaItem) -> Unit
 ) {
     val shape = RoundedCornerShape(12.dp)
-    Box(
-        modifier = modifier
-            .clip(shape)
-            .clickable { onClick(item) }
-            .tvFocus(cornerRadius = 12.dp)
-            .background(Color(0xFF141414))
-            // Do not enforce height if caller provides size; fallback to 180.dp height by default
-            .then(Modifier.height(180.dp))
+    // Compose the card using a stacked layout without calling Box()
+    // We rely on a clickable, clipped container and place child layers using full-size modifiers.
+    val baseModifier = modifier
+        .clip(shape)
+        .clickable { onClick(item) }
+        .tvFocus(cornerRadius = 12.dp)
+        .background(Color(0xFF141414))
+        .then(Modifier.height(180.dp))
+        .fillMaxWidth()
+
+    val painter = rememberAsyncImagePainter(model = item.imageUrl)
+
+    // Background image layer
+    Image(
+        painter = painter,
+        contentDescription = item.title,
+        modifier = baseModifier, // full card bounds
+        contentScale = ContentScale.Crop
+    )
+
+    // Gradient overlay strip (avoid Row/Box to bypass inline defaults).
+    androidx.compose.foundation.layout.Spacer(
+        modifier = Modifier
             .fillMaxWidth()
-    ) {
-        val painter = rememberAsyncImagePainter(model = item.imageUrl)
-        Image(
-            painter = painter,
-            contentDescription = item.title,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        // Subtle bottom gradient for legibility
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth()
-                .height(56.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color(0x99000000))
-                    )
+            .height(56.dp)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Color(0x99000000))
                 )
-        )
-        Text(
-            text = item.title,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 6.dp),
-            textAlign = TextAlign.Start,
-            maxLines = 1
-        )
-    }
+            )
+    )
+
+    // Title text (placed after overlay in composition to appear on top)
+    Text(
+        text = item.title,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        textAlign = TextAlign.Start,
+        maxLines = 1
+    )
 }

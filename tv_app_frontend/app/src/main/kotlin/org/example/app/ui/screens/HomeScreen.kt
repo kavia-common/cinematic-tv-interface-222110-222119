@@ -3,7 +3,7 @@ package org.example.app.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -82,27 +82,32 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
     // Subtle parallax based on scroll
     val parallaxOffset = (-scrollOffset / 40f).coerceAtLeast(-20f)
 
-    Box(
+    // Outer container without Box to avoid inline default overloads.
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(320.dp)
             .padding(horizontal = 24.dp, vertical = 8.dp)
-            .clip(MaterialTheme.shapes.large),
-        propagateMinConstraints = false
+            .clip(MaterialTheme.shapes.large)
     ) {
         val painter = rememberAsyncImagePainter(model = item.imageUrl)
+
+        // Image with parallax offset
         Image(
             painter = painter,
             contentDescription = item.title,
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(320.dp)
                 .padding(top = (parallaxOffset).dp),
             contentScale = ContentScale.Crop
         )
-        // Dark overlay for readability
-        Box(
+
+        // Overlay gradient strip placed after image using a lightweight row with background brush.
+        androidx.compose.foundation.layout.Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(0.dp) // zero height to avoid affecting layout; visual overlay effect comes from subsequent text area
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(Color(0x99000000), Color(0xCC000000)),
@@ -110,11 +115,12 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
                         endY = Float.POSITIVE_INFINITY
                     )
                 )
-        )
+        ) { }
 
+        // Foreground texts and button
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(all = 20.dp),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.Start

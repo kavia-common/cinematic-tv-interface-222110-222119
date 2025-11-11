@@ -52,15 +52,12 @@ fun DetailsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(onClick = onBack) { Text("Back") }
-            Button(
-                onClick = { /* play action placeholder */ },
-                colors = ButtonDefaults.buttonColors(containerColor = TealAccent)
-            ) { Text("Play") }
-        }
+        // Avoid Row inline default overloads; render actions sequentially with spacing
+        Button(onClick = onBack) { Text("Back") }
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = { /* play action placeholder */ },
+            colors = ButtonDefaults.buttonColors(containerColor = TealAccent)
+        ) { Text("Play") }
     }
 }
