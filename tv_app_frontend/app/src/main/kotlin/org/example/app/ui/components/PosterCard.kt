@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -23,6 +22,13 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import org.example.app.data.MediaItem
 import org.example.app.tv.tvFocus
+
+// Precomputed constants to avoid inline factories in composables
+private val PosterCardCornerRadius: Dp = 12.dp
+private val PosterCardShape = RoundedCornerShape(PosterCardCornerRadius)
+private val PosterCardGradient = Brush.verticalGradient(
+    listOf(Color.Transparent, Color(0x99000000))
+)
 
 /**
  * PUBLIC_INTERFACE
@@ -40,25 +46,18 @@ fun PosterCard(
     modifier: Modifier = Modifier,
     onClick: (MediaItem) -> Unit
 ) {
-    // Precompute commonly used Dp values and shapes to avoid repeated inline calls at call sites.
     val cardHeight: Dp = 180.dp
-    val cornerRadius: Dp = 12.dp
-    // Avoid remember to prevent IR inline of ComposablesKt.remember; these are cheap and constant.
-    val shape = RoundedCornerShape(cornerRadius)
-    val gradientBrush = Brush.verticalGradient(listOf(Color.Transparent, Color(0x99000000)))
 
     val baseModifier = modifier
-        .clip(shape)
+        .clip(PosterCardShape)
         .clickable { onClick(item) }
-        .tvFocus(cornerRadius = cornerRadius)
+        .tvFocus(cornerRadius = PosterCardCornerRadius)
         .background(Color(0xFF141414))
         .height(cardHeight)
         .fillMaxWidth()
 
     val painter = rememberAsyncImagePainter(model = item.imageUrl)
 
-    // Compose in sequence: Image, gradient strip at bottom area, then title.
-    // We avoid Box by relying on the fact that later children draw after earlier ones.
     Image(
         painter = painter,
         contentDescription = item.title,
@@ -66,12 +65,11 @@ fun PosterCard(
         contentScale = ContentScale.Crop
     )
 
-    // A bottom-aligned gradient strip effect using a fixed-height gradient and padding for title.
     androidx.compose.foundation.layout.Spacer(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(brush = gradientBrush)
+            .background(brush = PosterCardGradient)
     )
 
     Text(

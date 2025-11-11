@@ -3,8 +3,6 @@ package org.example.app.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,7 +15,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +28,7 @@ import org.example.app.data.MediaItem
 import org.example.app.data.TabItem
 import org.example.app.ui.components.GenreRow
 import org.example.app.ui.components.TopBarTabs
+import org.example.app.ui.components.SafeColumn
 import org.example.app.ui.theme.GradientEnd
 import org.example.app.ui.theme.GradientStart
 import org.example.app.ui.theme.TealAccent
@@ -44,16 +42,14 @@ fun HomeScreen(
     onCardClick: (MediaItem) -> Unit
 ) {
     val scroll = rememberScrollState()
-    Column(
+    SafeColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(colors = listOf(GradientStart, GradientEnd), startY = 0f, endY = Float.POSITIVE_INFINITY)
             )
             .verticalScroll(state = scroll)
-            .padding(bottom = 48.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
+            .padding(bottom = 48.dp)
     ) {
         TopBarTabs(tabs = tabs, onSelected = { /* Could navigate or filter */ })
 
@@ -79,11 +75,9 @@ fun HomeScreen(
 // PUBLIC_INTERFACE
 @Composable
 fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
-    // Subtle parallax based on scroll
     val parallaxOffset = (-scrollOffset / 40f).coerceAtLeast(-20f)
 
-    // Outer container without Box to avoid inline default overloads.
-    Column(
+    SafeColumn(
         modifier = Modifier
             .fillMaxWidth()
             .height(320.dp)
@@ -92,7 +86,6 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
     ) {
         val painter = rememberAsyncImagePainter(model = item.imageUrl)
 
-        // Image with parallax offset
         Image(
             painter = painter,
             contentDescription = item.title,
@@ -103,11 +96,10 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
             contentScale = ContentScale.Crop
         )
 
-        // Overlay gradient strip placed after image using a lightweight row with background brush.
-        androidx.compose.foundation.layout.Row(
+        androidx.compose.foundation.layout.Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(0.dp) // zero height to avoid affecting layout; visual overlay effect comes from subsequent text area
+                .height(0.dp)
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(Color(0x99000000), Color(0xCC000000)),
@@ -115,15 +107,12 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
                         endY = Float.POSITIVE_INFINITY
                     )
                 )
-        ) { }
+        )
 
-        // Foreground texts and button
-        Column(
+        SafeColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 20.dp),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.Start
+                .padding(all = 20.dp)
         ) {
             Text(
                 text = item.title,
