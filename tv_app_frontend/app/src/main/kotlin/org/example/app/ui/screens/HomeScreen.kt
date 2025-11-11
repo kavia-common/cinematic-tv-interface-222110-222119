@@ -96,7 +96,7 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
             contentDescription = item.title,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = parallaxOffset.dp),
+                .padding(top = (parallaxOffset).dp),
             contentScale = ContentScale.Crop
         )
         // Dark overlay for readability

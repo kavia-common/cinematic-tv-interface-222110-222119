@@ -36,9 +36,10 @@ fun PosterCard(
         modifier = modifier
             .clip(shape)
             .clickable { onClick(item) }
-            .tvFocus()
+            .tvFocus(cornerRadius = 12.dp)
             .background(Color(0xFF141414))
-            .height(180.dp)
+            // Do not enforce height if caller provides size; fallback to 180.dp height by default
+            .then(Modifier.height(180.dp))
             .fillMaxWidth()
     ) {
         val painter = rememberAsyncImagePainter(model = item.imageUrl)

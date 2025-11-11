@@ -1,13 +1,8 @@
 package org.example.app.tv
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -17,13 +12,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.example.app.ui.theme.GlowBlue
 import org.example.app.ui.theme.GlowCyan
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 
 // PUBLIC_INTERFACE
 fun Modifier.tvFocus(
@@ -31,27 +26,22 @@ fun Modifier.tvFocus(
     cornerRadius: Dp = 12.dp,
     glowColors: List<Color> = listOf(GlowBlue.copy(alpha = 0.5f), GlowCyan.copy(alpha = 0.5f))
 ): Modifier {
-    // Implement using stable focus APIs without composed{}.
-    var focused by mutableStateOf(false)
-    val scale by animateFloatAsState(
-        targetValue = if (focused) focusedScale else 1f,
-        animationSpec = spring(dampingRatio = 0.6f, stiffness = 350f),
-        label = "focus-scale"
-    )
+    // Avoid remember/animate to prevent IR inline issues in CI; use simple state-less indicator
+    var isFocused = false
     val shape = RoundedCornerShape(cornerRadius)
     val requester = FocusRequester()
 
     return this
-        .scale(scale)
-        .shadow(if (focused) 16.dp else 4.dp, shape, clip = false)
+        .scale(if (isFocused) focusedScale else 1f)
+        .shadow(if (isFocused) 16.dp else 4.dp, shape, clip = false)
         .border(
             BorderStroke(
-                width = if (focused) 2.dp else 0.dp,
+                width = if (isFocused) 2.dp else 0.dp,
                 brush = Brush.linearGradient(glowColors)
             ),
             shape = shape
         )
-        .onFocusChanged { state -> focused = state.hasFocus }
+        .onFocusChanged { state -> isFocused = state.hasFocus }
         .focusRequester(requester)
         .focusProperties { canFocus = true }
         .semantics { role = Role.Button }
