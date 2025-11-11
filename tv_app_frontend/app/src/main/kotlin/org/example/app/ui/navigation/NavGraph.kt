@@ -15,7 +15,11 @@ object Routes {
     fun details(id: String) = "details/$id"
 }
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * AppNavGraph builds the Navigation graph with Home and Details destinations inline.
+ * @param navController NavHostController driving navigation.
+ */
 @Composable
 fun AppNavGraph(navController: NavHostController) {
     val repo = SampleRepository()

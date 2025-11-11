@@ -2,7 +2,14 @@ package org.example.app.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -41,10 +48,12 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.verticalGradient(listOf(GradientStart, GradientEnd))
+                brush = Brush.verticalGradient(colors = listOf(GradientStart, GradientEnd), startY = 0f, endY = Float.POSITIVE_INFINITY)
             )
-            .verticalScroll(scroll)
-            .padding(bottom = 48.dp)
+            .verticalScroll(state = scroll)
+            .padding(bottom = 48.dp),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
     ) {
         TopBarTabs(tabs = tabs, onSelected = { /* Could navigate or filter */ })
 
@@ -67,17 +76,19 @@ fun HomeScreen(
  * Includes a dark overlay, title, description and a Play Now button accented with #00BCD4.
  * Adds subtle parallax based on vertical scroll offset.
  */
+// PUBLIC_INTERFACE
 @Composable
 fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
     // Subtle parallax based on scroll
-    val parallaxOffset = remember(scrollOffset) { (-scrollOffset / 40f).coerceAtLeast(-20f) }
+    val parallaxOffset = (-scrollOffset / 40f).coerceAtLeast(-20f)
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(320.dp)
             .padding(horizontal = 24.dp, vertical = 8.dp)
-            .clip(MaterialTheme.shapes.large)
+            .clip(MaterialTheme.shapes.large),
+        propagateMinConstraints = false
     ) {
         val painter = rememberAsyncImagePainter(model = item.imageUrl)
         Image(
@@ -93,8 +104,10 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0x99000000), Color(0xCC000000))
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0x99000000), Color(0xCC000000)),
+                        startY = 0f,
+                        endY = Float.POSITIVE_INFINITY
                     )
                 )
         )
@@ -102,8 +115,9 @@ fun FeaturedBanner(item: MediaItem, scrollOffset: Int) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.Bottom
+                .padding(all = 20.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.Start
         ) {
             Text(
                 text = item.title,
