@@ -3,6 +3,7 @@ package org.example.app.tv
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -18,13 +19,13 @@ import org.example.app.ui.theme.GlowCyan
 
 // PUBLIC_INTERFACE
 fun Modifier.tvFocus(
-    focusedScale: Float = 1.0f, // keep static to avoid dynamic focus-dependent IR paths
+    focusedScale: Float = 1.0f, // static to avoid dynamic IR paths
     cornerRadius: Dp = 12.dp,
     glowColors: List<Color> = listOf(GlowBlue.copy(alpha = 0.5f), GlowCyan.copy(alpha = 0.5f))
 ): Modifier {
+    // Precompute the shape value from Dp outside of intrinsic callsites when possible.
     val shape = RoundedCornerShape(cornerRadius)
 
-    // Static styling: gentle shadow and border; no focusRequester or focusProperties to avoid IR issues.
     return this
         .scale(focusedScale)
         .shadow(4.dp, shape, clip = false)

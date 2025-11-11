@@ -2,9 +2,7 @@ package org.example.app.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+/* Avoid importing Column/Row/Arrangement to prevent inline defaults during IR. */
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -31,33 +29,43 @@ fun DetailsScreen(
 ) {
     BackHandler { onBack() }
 
-    Column(
+    // Sequential composition without Column/Row to avoid inline IR issues.
+    val containerModifier = Modifier
+        .fillMaxSize()
+        .background(
+            brush = Brush.verticalGradient(
+                colors = listOf(GradientStart, GradientEnd),
+                startY = 0f,
+                endY = Float.POSITIVE_INFINITY
+            )
+        )
+        .padding(all = 24.dp)
+
+    // Title
+    Text(
+        text = item?.title ?: "Unknown",
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.onBackground,
+        modifier = containerModifier
+    )
+
+    // Description
+    Text(
+        text = item?.description ?: "No description available.",
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(colors = listOf(GradientStart, GradientEnd), startY = 0f, endY = Float.POSITIVE_INFINITY))
-            .padding(all = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = item?.title ?: "Unknown",
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-        Text(
-            text = item?.description ?: "No description available.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+            .padding(top = 8.dp, start = 24.dp, end = 24.dp)
+    )
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-        // Avoid Row inline default overloads; render actions sequentially with spacing
-        Button(onClick = onBack) { Text("Back") }
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(
-            onClick = { /* play action placeholder */ },
-            colors = ButtonDefaults.buttonColors(containerColor = TealAccent)
-        ) { Text("Play") }
-    }
+    // Actions (rendered sequentially)
+    Button(onClick = onBack) { Text("Back") }
+    Spacer(modifier = Modifier.height(12.dp))
+    Button(
+        onClick = { /* play action placeholder */ },
+        colors = ButtonDefaults.buttonColors(containerColor = TealAccent)
+    ) { Text("Play") }
 }
