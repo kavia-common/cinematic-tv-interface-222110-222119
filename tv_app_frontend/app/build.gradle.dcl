@@ -4,6 +4,7 @@ androidApplication {
     // Note: Declarative DSL allows only limited edits; dependencies block updated to include Compose + TV libs
     dependencies {
         // Jetpack Compose UI libs (explicit versions to comply with project rules)
+        implementation("androidx.compose.runtime:runtime:1.7.3")
         implementation("androidx.compose.ui:ui:1.7.3")
         implementation("androidx.compose.foundation:foundation:1.7.3")
         implementation("androidx.compose.ui:ui-tooling-preview:1.7.3")

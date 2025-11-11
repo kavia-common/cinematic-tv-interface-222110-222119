@@ -25,8 +25,6 @@ defaults {
         versionName = "0.1"
         applicationId = "org.gradle.experimental.android.app"
 
-        
-
         testing {
             dependencies {
                 implementation("org.junit.jupiter:junit-jupiter:5.10.2")
